@@ -47,7 +47,7 @@ def show_employee_information():
 
     # Show password input field if access is not yet granted
     if not st.session_state.access_granted:
-        password = st.text_input("Enter Admin Password to Edit Database(password is in ptt)", type="password")
+        password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
         if st.button("Submit Password"):
             if password == "Anand":
                 st.session_state.access_granted = True
@@ -128,7 +128,7 @@ def show_time_and_attendance():
         st.subheader("Overtime Calculation and Management")
         st.table(st.session_state.overtime_data)
         if not st.session_state.access_granted:
-            password = st.text_input("Enter Admin Password to Edit Database(password is in ptt)", type="password")
+            password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
             if st.button("Submit Password"):
                 if password == "Anand":
                     st.session_state.access_granted = True
@@ -177,7 +177,7 @@ def show_time_and_attendance():
         st.subheader("Leave Management")
         st.table(st.session_state.leave_data)
         if not st.session_state.access_granted:
-            password = st.text_input("Enter Admin Password to Edit Database(password is in ptt)", type="password")
+            password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
             if st.button("Submit Password"):
                 if password == "Anand":
                     st.session_state.access_granted = True
@@ -248,7 +248,7 @@ def show_payroll_information():
         return
 
     # Password input for secure access
-    password = st.text_input("Enter Admin Password to Access Payroll Processing(password is in ptt)", type="password")
+    password = st.text_input("Enter Admin Password to Access Payroll Processing(password is in ppt)", type="password")
 
     # Dropdown for selecting an employee
 
