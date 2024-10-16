@@ -47,14 +47,18 @@ def authenticate_gdrive():
     return service
 
 # Function to upload file to Google Drive
-def upload_file_to_gdrive(service, file, folder_id):
-    file_metadata = {
-        'name': file.name,
-        'parents': [folder_id]
-    }
-    media = MediaIoBaseUpload(file, mimetype=file.type)
-    uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    return uploaded_file.get('id')
+def upload_file_to_gdrive(service, file, folder_id,selected_employee):
+    try:
+        file_metadata = {
+            'name': file.name,
+            'parents': [folder_id]
+        }
+        media = MediaIoBaseUpload(file, mimetype=file.type)
+        uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        return uploaded_file.get('id')
+    except Exception as e:
+        print(e)
+
 # Function to display the Employee Information section
 def show_employee_information():
     # Display the employee data as a table
@@ -73,8 +77,9 @@ def show_employee_information():
 
     if uploaded_file is not None:
         if st.button("Upload Document"):
-            file_id = upload_file_to_gdrive(service, uploaded_file, folder_id)
-            st.success(f"Document uploaded successfully for {selected_employee}. File ID: {file_id}")
+            file_id = upload_file_to_gdrive(service, uploaded_file, folder_id,selected_employee)
+            st.success(f"It is a deployed app using public repo, for security reasons your file didn't get uploaded to drive, but for you to see the working of this function developer creted a video file where it is being shown, please refer to ppt....Hope you understand,Thankyou :)")
+
 
     # Show password input field if access is not yet granted
     if not st.session_state.access_granted:
