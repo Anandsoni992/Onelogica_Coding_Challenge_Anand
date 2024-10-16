@@ -59,7 +59,7 @@ def upload_file_to_gdrive(service, file, folder_id):
 def show_employee_information():
     # Display the employee data as a table
     st.subheader("Employee Information")
-    st.table(st.session_state.employee_data)
+    st.table(st.session_state.employee_data) 
 
     # Document upload section
     service = authenticate_gdrive()
@@ -75,6 +75,16 @@ def show_employee_information():
         if st.button("Upload Document"):
             file_id = upload_file_to_gdrive(service, uploaded_file, folder_id)
             st.success(f"Document uploaded successfully for {selected_employee}. File ID: {file_id}")
+
+    # Show password input field if access is not yet granted
+    if not st.session_state.access_granted:
+        password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
+        if st.button("Submit Password"):
+            if password == "Anand":
+                st.session_state.access_granted = True
+                st.success("Access Granted! You can now add, remove, or edit employee data.")
+            else:
+                st.error("Password is incorrect!")
 
     # Show password input field if access is not yet granted
     if not st.session_state.access_granted:
