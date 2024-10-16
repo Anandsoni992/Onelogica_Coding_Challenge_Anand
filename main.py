@@ -507,7 +507,7 @@ def show_footer():
         """
         <hr style="border:1px solid #ccc;">
         <div style="text-align: center;">
-            <a href="https://your-portfolio-link.com" target="_blank" style="text-decoration: none; color: #0366d6;">
+            <a href="https://anandportfolio-dee38.web.app" target="_blank" style="text-decoration: none; color: #0366d6;">
                 About Developer
             </a>
         </div>
