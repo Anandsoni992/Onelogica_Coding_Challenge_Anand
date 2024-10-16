@@ -86,16 +86,6 @@ def show_employee_information():
             else:
                 st.error("Password is incorrect!")
 
-    # Show password input field if access is not yet granted
-    if not st.session_state.access_granted:
-        password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
-        if st.button("Submit Password"):
-            if password == "Anand":
-                st.session_state.access_granted = True
-                st.success("Access Granted! You can now add, remove, or edit employee data.")
-            else:
-                st.error("Password is incorrect!")
-
     # If access is granted, show options to add, remove, or edit data
     if st.session_state.access_granted:
         action = st.selectbox("Select Action:", ["Add Employee", "Remove Employee", "Edit Employee"])
