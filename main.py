@@ -1,3 +1,6 @@
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 import streamlit as st
 import pandas as pd
 
@@ -38,12 +41,49 @@ if "employee_data" not in st.session_state:
 if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
+def authenticate_gdrive():
+    creds = service_account.Credentials.from_service_account_file('credentials.json')
+    service = build('drive', 'v3', credentials=creds)
+    return service
 
+# Function to upload file to Google Drive
+def upload_file_to_gdrive(service, file, folder_id):
+    file_metadata = {
+        'name': file.name,
+        'parents': [folder_id]
+    }
+    media = MediaIoBaseUpload(file, mimetype=file.type)
+    uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return uploaded_file.get('id')
 # Function to display the Employee Information section
 def show_employee_information():
     # Display the employee data as a table
     st.subheader("Employee Information")
-    st.table(st.session_state.employee_data)
+    st.table(st.session_state.employee_data) 
+
+    # Document upload section
+    service = authenticate_gdrive()
+    folder_id = '1d_CDpSEzHEJSmgKsjs8VIFHkwWx2vRPF'
+
+    # Employee selection dropdown
+    selected_employee = st.selectbox("Select Employee whose documents you want to upload", st.session_state.employee_data["Name"])
+
+    # File upload section for selected employee
+    uploaded_file = st.file_uploader(f"Upload a document for {selected_employee}")
+
+    if uploaded_file is not None:
+        if st.button("Upload Document"):
+            file_id = upload_file_to_gdrive(service, uploaded_file, folder_id)
+            st.success(f"Document uploaded successfully for {selected_employee}. File ID: {file_id}")
+    # Show password input field if access is not yet granted
+    if not st.session_state.access_granted:
+        password = st.text_input("Enter Admin Password to Edit Database", type="password")
+        if st.button("Submit Password"):
+            if password == "Anand":
+                st.session_state.access_granted = True
+                st.success("Access Granted! You can now add, remove, or edit employee data.")
+            else:
+                st.error("Password is incorrect!")
 
     # Show password input field if access is not yet granted
     if not st.session_state.access_granted:
