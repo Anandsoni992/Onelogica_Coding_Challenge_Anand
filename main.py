@@ -502,6 +502,18 @@ def benefits_management():
         if st.button("Add Usage Entry"):
             st.success(f"Usage entry added for {employee_name}: Claims - {claims}, Contributions - {contributions}")
 
+def show_footer():
+    st.markdown(
+        """
+        <hr style="border:1px solid #ccc;">
+        <div style="text-align: center;">
+            <a href="https://your-portfolio-link.com" target="_blank" style="text-decoration: none; color: #0366d6;">
+                About Developer
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Display the appropriate section based on the selected option
 if menu == "Employee Information":
@@ -513,4 +525,5 @@ elif menu == "Payroll Processing":
 elif menu == "Performance Management":
     performance_management()
 elif menu == "Benefits Administration":
-    benefits_management()
+    benefits_management() 
+show_footer()
