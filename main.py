@@ -1,3 +1,6 @@
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 import streamlit as st
 import pandas as pd
 
@@ -15,19 +18,19 @@ menu = st.selectbox(
 # Using session state to keep the data persistent across user interactions
 if "employee_data" not in st.session_state:
     st.session_state.employee_data = pd.DataFrame({
-        "Name": ["John Doe", "Jane Smith", "Alice Brown"],
+        "Name": ["Anand", "Abhishek", "Anshul"],
         "Contact Details": ["123-456-7890", "987-654-3210", "456-789-0123"],
         "Job Role": ["Manager", "Developer", "Analyst"],
         "Salary": [50000, 70000, 60000],
         "Performance History": ["Excellent", "Good", "Average"]
     })
     st.session_state.overtime_data = pd.DataFrame({
-        "Name": ["John Doe", "Jane Smith", "Alice Brown"],
+        "Name": ["Anand", "Abhishek", "Anshul"],
         "Contact Details": ["123-456-7890", "987-654-3210", "456-789-0123"],
         "Overtime Hours": [5, 10, 2]
     })
     st.session_state.leave_data = pd.DataFrame({
-        "Name": ["John Doe", "Jane Smith", "Alice Brown"],
+        "Name": ["Anand", "Abhishek", "Anshul"],
         "Contact Details": ["123-456-7890", "987-654-3210", "456-789-0123"],
         "Vacation Leave": [10, 5, 8],
         "Sick Leave": [2, 1, 3],
@@ -38,16 +41,44 @@ if "employee_data" not in st.session_state:
 if "access_granted" not in st.session_state:
     st.session_state.access_granted = False
 
+def authenticate_gdrive():
+    creds = service_account.Credentials.from_service_account_file('credentials.json')
+    service = build('drive', 'v3', credentials=creds)
+    return service
 
+# Function to upload file to Google Drive
+def upload_file_to_gdrive(service, file, folder_id):
+    file_metadata = {
+        'name': file.name,
+        'parents': [folder_id]
+    }
+    media = MediaIoBaseUpload(file, mimetype=file.type)
+    uploaded_file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return uploaded_file.get('id')
 # Function to display the Employee Information section
 def show_employee_information():
     # Display the employee data as a table
     st.subheader("Employee Information")
     st.table(st.session_state.employee_data)
 
+    # Document upload section
+    service = authenticate_gdrive()
+    folder_id = '1d_CDpSEzHEJSmgKsjs8VIFHkwWx2vRPF'
+
+    # Employee selection dropdown
+    selected_employee = st.selectbox("Select Employee whose documents you want to upload", st.session_state.employee_data["Name"])
+
+    # File upload section for selected employee
+    uploaded_file = st.file_uploader(f"Upload a document for {selected_employee}")
+
+    if uploaded_file is not None:
+        if st.button("Upload Document"):
+            file_id = upload_file_to_gdrive(service, uploaded_file, folder_id)
+            st.success(f"Document uploaded successfully for {selected_employee}. File ID: {file_id}")
+
     # Show password input field if access is not yet granted
     if not st.session_state.access_granted:
-        password = st.text_input("Enter Admin Password to Edit Database", type="password")
+        password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
         if st.button("Submit Password"):
             if password == "Anand":
                 st.session_state.access_granted = True
@@ -128,7 +159,7 @@ def show_time_and_attendance():
         st.subheader("Overtime Calculation and Management")
         st.table(st.session_state.overtime_data)
         if not st.session_state.access_granted:
-            password = st.text_input("Enter Admin Password to Edit Database", type="password")
+            password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
             if st.button("Submit Password"):
                 if password == "Anand":
                     st.session_state.access_granted = True
@@ -177,7 +208,7 @@ def show_time_and_attendance():
         st.subheader("Leave Management")
         st.table(st.session_state.leave_data)
         if not st.session_state.access_granted:
-            password = st.text_input("Enter Admin Password to Edit Database", type="password")
+            password = st.text_input("Enter Admin Password to Edit Database(password is in ppt)", type="password")
             if st.button("Submit Password"):
                 if password == "Anand":
                     st.session_state.access_granted = True
@@ -248,7 +279,7 @@ def show_payroll_information():
         return
 
     # Password input for secure access
-    password = st.text_input("Enter Admin Password to Access Payroll Processing", type="password")
+    password = st.text_input("Enter Admin Password to Access Payroll Processing(password is in ppt)", type="password")
 
     # Dropdown for selecting an employee
 
@@ -354,7 +385,7 @@ def performance_management():
 
         # Simulated goal data (could be stored in session state)
         goal_data = {
-            "Employee": ["John Doe", "Jane Smith", "Alice Brown"],
+            "Employee": ["Anand", "Abhishek", "Anshul"],
             "Goals": [
                 "Increase sales by 20%",
                 "Complete 5 training courses",
@@ -381,7 +412,7 @@ def performance_management():
 
         # Simulated review data (could be stored in session state)
         review_data = {
-            "Employee": ["John Doe", "Jane Smith", "Alice Brown"],
+            "Employee": ["Anand", "Abhishek", "Anshul"],
             "Review Date": ["2024-01-10", "2024-01-15", "2024-01-20"],
             "Rating": [4.5, 4.0, 5.0],
             "Comments": [
@@ -410,7 +441,7 @@ def performance_management():
 
         # Simulated development plan data (could be stored in session state)
         development_data = {
-            "Employee": ["John Doe", "Jane Smith", "Alice Brown"],
+            "Employee": ["Anand", "Abhishek", "Anshul"],
             "Skill to Develop": ["Sales Techniques", "Time Management", "Leadership Skills"],
             "Action Plan": [
                 "Enroll in advanced sales training.",
@@ -447,7 +478,7 @@ def benefits_management():
 
         # Simulated benefits data (could be stored in session state)
         benefits_data = {
-            "Employee": ["John Doe", "Jane Smith", "Alice Brown"],
+            "Employee": ["Anand", "Abhishek", "Anshul"],
             "Health Insurance": ["Premium Plan", "Basic Plan", "Premium Plan"],
             "Retirement Plan": ["401(k)", "Pension Plan", "401(k)"]
         }
@@ -469,7 +500,7 @@ def benefits_management():
         st.subheader("Benefit Enrollment and Changes")
 
         # Dropdown to select an employee
-        employee_name = st.selectbox("Select Employee", ["John Doe", "Jane Smith", "Alice Brown"])
+        employee_name = st.selectbox("Select Employee", ["Anand", "Abhishek", "Anshul"])
 
         # Enrollment form for new benefits
         st.write(f"Enroll {employee_name} in benefits:")
@@ -485,7 +516,7 @@ def benefits_management():
 
         # Simulated usage data (could be stored in session state)
         usage_data = {
-            "Employee": ["John Doe", "Jane Smith", "Alice Brown"],
+            "Employee": ["Anand", "Abhishek", "Anshul"],
             "Health Insurance Claims": [1200, 800, 1500],
             "Retirement Contributions": [5000, 3000, 7000]
         }
@@ -502,6 +533,18 @@ def benefits_management():
         if st.button("Add Usage Entry"):
             st.success(f"Usage entry added for {employee_name}: Claims - {claims}, Contributions - {contributions}")
 
+def show_footer():
+    st.markdown(
+        """
+        <hr style="border:1px solid #ccc;">
+        <div style="text-align: center;">
+            <a href="https://anandportfolio-dee38.web.app" target="_blank" style="text-decoration: none; color: #0366d6;">
+                About Developer
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Display the appropriate section based on the selected option
 if menu == "Employee Information":
@@ -514,3 +557,4 @@ elif menu == "Performance Management":
     performance_management()
 elif menu == "Benefits Administration":
     benefits_management()
+show_footer()
